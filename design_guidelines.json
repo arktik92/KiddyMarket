@@ -1,0 +1,166 @@
+{
+  "app_name": "KiddyMarket",
+  "personality": "4 Tactile / Playful LIGHT",
+  "personality_one_liner": "A joyful, chunky, and tactile digital grocery store that makes learning about money feel like a playful game for kids.",
+  "color": {
+    "surface": "#FFFAF3",
+    "onSurface": "#1D2024",
+    "surfaceSecondary": "#FFFFFF",
+    "onSurfaceSecondary": "#1D2024",
+    "surfaceTertiary": "#FFF0DD",
+    "onSurfaceTertiary": "#1D2024",
+    "surfaceInverse": "#1D2024",
+    "onSurfaceInverse": "#FFFFFF",
+    "brand": "#FF6B6B",
+    "onBrand": "#FFFFFF",
+    "brandPrimary": "#FF6B6B",
+    "onBrandPrimary": "#FFFFFF",
+    "brandSecondary": "#4ECDC4",
+    "onBrandSecondary": "#1D2024",
+    "brandTertiary": "#FFE66D",
+    "onBrandTertiary": "#1D2024",
+    "success": "#4ECDC4",
+    "onSuccess": "#FFFFFF",
+    "warning": "#FFE66D",
+    "onWarning": "#1D2024",
+    "error": "#FF6B6B",
+    "onError": "#FFFFFF",
+    "info": "#4D96FF",
+    "onInfo": "#FFFFFF",
+    "border": "#F0E5D8",
+    "borderStrong": "#D6C7B8",
+    "divider": "#F0E5D8",
+    "muted": "#7A828A"
+  },
+  "typography": {
+    "displayFontFamily": "Fredoka",
+    "textFontFamily": "Nunito",
+    "scale": {
+      "sm": 14,
+      "base": 18,
+      "lg": 22,
+      "xl": 28,
+      "2xl": 36
+    }
+  },
+  "spacing": {
+    "rule": "Generous spacing. Use oversized margins to make targets easy for children to tap. Layouts should feel breathable and stacked like blocks.",
+    "xs": 8,
+    "sm": 12,
+    "md": 16,
+    "lg": 24,
+    "xl": 32,
+    "2xl": 40,
+    "3xl": 56
+  },
+  "radius_tokens": {
+    "sm": 12,
+    "md": 16,
+    "lg": 24,
+    "pill": 999
+  },
+  "shadow_tier": "2",
+  "navigation": "bottom_tabs",
+  "icon_set": "Ionicons",
+  "glassmorphism": {
+    "enabled": false,
+    "do's": [],
+    "dont's": ["Do not use glassmorphism as this is a tactile/playful personality app. Rely on solid, chunky, card-like containers with shadow 2."]
+  },
+  "platform_libraries": {
+    "glass": {
+      "ios": "expo-glass-effect",
+      "android": "expo-blur",
+      "low_end_android_fallback": "solid surfaceSecondary"
+    },
+    "image": "expo-image",
+    "blur": "expo-blur",
+    "bottom_sheet": "@gorhom/bottom-sheet",
+    "animation": "react-native-reanimated",
+    "gesture": "react-native-gesture-handler"
+  },
+  "screens": [
+    {
+      "name": "ProfileSelection",
+      "purpose": "First screen where the child taps their avatar to enter their dashboard, or the parent taps a lock to manage the store.",
+      "states": {
+        "loading": "Centered chunky spinner with 'Chargement...'",
+        "empty": "No profiles created. Big illustration + 'Demande à tes parents de créer ton profil!'",
+        "error": "Error message with 'Réessayer'"
+      },
+      "layout": "Header 'Qui es-tu ?' with display typography. Grid of oversized circular avatars (cute animal photos). At the very bottom, a discreet 'Accès Parent' button requiring a 4-digit PIN to access."
+    },
+    {
+      "name": "ChildDashboard",
+      "purpose": "Shows the kid their current balance and what they have bought.",
+      "states": {
+        "loading": "Spinner.",
+        "empty": "No purchases yet. Illustration of an empty shopping bag + 'Tu n\\'as rien acheté !'",
+        "error": "Retry button."
+      },
+      "layout": "Huge tactile card at the top styled like a blue bank card ('Carte Bleue') featuring their balance in huge numbers. A 'Historique' section below listing items bought with large product icons. Big logout button."
+    },
+    {
+      "name": "ParentCashier",
+      "purpose": "Store checkout simulation where parents ring up items the kid wants to buy.",
+      "states": {
+        "loading": "Spinner.",
+        "empty": "Cart is empty. Prompt to add items from the store.",
+        "error": "Retry button."
+      },
+      "layout": "Bottom tabs for Parent (Caisse, Boutique, Enfants). In Caisse: Grid of products to add to cart. Bottom sheet or sticky bottom area showing 'Total: X€' and a massive 'Payer (NFC)' button. Tapping it simulates scanning the kid's 'Carte Bleue' and shows a joyful success animation."
+    },
+    {
+      "name": "ParentStoreManagement",
+      "purpose": "CRUD for products in the grocery store.",
+      "states": {
+        "loading": "Spinner.",
+        "empty": "Illustration + 'Ajoute ton premier produit !'",
+        "error": "Retry button."
+      },
+      "layout": "List of products with their icon, category, and price. Floating Action Button (FAB) at bottom right to add new product."
+    }
+  ],
+  "images": {
+    "avatar_lion": {
+      "url": "https://images.unsplash.com/photo-1628148061873-13b9340f763b?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1ODB8MHwxfHNlYXJjaHwxfHxjdXRlJTIwYW5pbWFsJTIwZmFjZSUyMHBvcnRyYWl0fGVufDB8fHx8MTc4OTI3NjMzM3ww&ixlib=rb-4.1.0&q=85",
+      "alt": "Lion avatar"
+    },
+    "avatar_meerkat": {
+      "url": "https://images.unsplash.com/photo-1574026252693-08f70035a0f4?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1ODB8MHwxfHNlYXJjaHwzfHxjdXRlJTIwYW5pbWFsJTIwZmFjZSUyMHBvcnRyYWl0fGVufDB8fHx8MTc4OTI3NjMzM3ww&ixlib=rb-4.1.0&q=85",
+      "alt": "Lemur/Meerkat avatar"
+    },
+    "product_candy": {
+      "url": "https://images.unsplash.com/photo-1576712967455-c8d22580e9be?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NjZ8MHwxfHNlYXJjaHwxfHxjYW5keSUyMHN3ZWV0cyUyMGdyb2Nlcnl8ZW58MHx8fHwxNzg5Mjc2MzM3fDA&ixlib=rb-4.1.0&q=85",
+      "alt": "Candy and sweets"
+    },
+    "product_toys": {
+      "url": "https://images.unsplash.com/photo-1633857594566-7a881cfe0885?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjY2NzN8MHwxfHNlYXJjaHwxfHxjaGlsZHJlbiUyMHRveXMlMjBmbGF0bGF5fGVufDB8fHx8MTc4OTI3NjMzN3ww&ixlib=rb-4.1.0&q=85",
+      "alt": "Children toys"
+    },
+    "product_books": {
+      "url": "https://images.unsplash.com/photo-1644416598043-11c2816eec28?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzMzl8MHwxfHNlYXJjaHwxfHxjb2xvcmZ1bCUyMGNoaWxkcmVuJTIwYm9va3N8ZW58MHx8fHwxNzg5Mjc2MzM3fDA&ixlib=rb-4.1.0&q=85",
+      "alt": "Colorful children books"
+    }
+  },
+  "instructions_to_main_agent": [
+    "Strictly follow the Tactile / Playful LIGHT personality. Use oversized tap targets, chunky components (radius lg to pill), and vibrant contrasting colors.",
+    "No emojis in the UI as per the zero-tolerance rules. For avatars, rely on the provided real animal Unsplash photos (avatar_lion, avatar_meerkat). For products, use the provided photos or Ionicons.",
+    "For the Child Dashboard, display a digital 'Carte Bleue' card. Because the prompt specifically uses the term 'Carte Bleue', it is permitted to use a blue background for this specific card (e.g., using the info color #4D96FF or a custom sky blue).",
+    "Keep typography scale large. The font is Fredoka for display and Nunito for text. Do not use weights above 500.",
+    "Include playful micro-animations via reanimated (e.g. overshoot on press, success animations after NFC payment).",
+    "Ensure Parent screens are simple but allow CRUD for products and children. Implement a PIN lock (e.g. 1234) before entering the Parent section.",
+    "Translate all copy strictly to French as requested.",
+    "Make sure forms have inputs with soft rounded background (surfaceTertiary) and labels above inputs.",
+    "The NFC payment must include a 'Simulate NFC' button that triggers the payment success flow."
+  ],
+  "haptics": {
+    "events": {
+      "button_press": "impactLight",
+      "add_to_cart": "impactMedium",
+      "nfc_scan_success": "notificationSuccess",
+      "nfc_scan_error": "notificationError",
+      "pin_entry": "selection"
+    }
+  }
+}
