@@ -3,7 +3,7 @@
 import React from "react";
 import { Pressable, Text, View } from "react-native";
 import { Ionicons } from "@react-native-vector-icons/ionicons";
-import Animated, { FadeIn, FadeOut, SlideInDown, SlideOutDown } from "react-native-reanimated";
+import Animated, { FadeIn, FadeOut, SlideInDown, SlideOutDown, Easing } from "react-native-reanimated";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -34,8 +34,8 @@ export function Sheet({
         <Pressable style={styles.backdrop} onPress={onClose} testID="sheet-backdrop" />
       </Animated.View>
       <Animated.View
-        entering={SlideInDown.springify().damping(18)}
-        exiting={SlideOutDown}
+        entering={SlideInDown.duration(240).easing(Easing.out(Easing.cubic))}
+        exiting={SlideOutDown.duration(180)}
         style={[styles.sheet, { paddingBottom: insets.bottom + 20 }]}
       >
         <View style={styles.handle} />

@@ -168,7 +168,7 @@ export function PaymentSheet({
 
       {step === "success" && child ? (
         <Animated.View entering={FadeIn} style={styles.centerBlock}>
-          <Animated.View entering={ZoomIn.springify().damping(10)} style={[styles.bigIcon, { backgroundColor: colors.success }]}>
+          <Animated.View entering={ZoomIn.duration(240)} style={[styles.bigIcon, { backgroundColor: colors.success }]}>
             <Ionicons name="checkmark" size={54} color={colors.onSuccess} />
           </Animated.View>
           <Text style={styles.bigMsg}>Achat réussi !</Text>

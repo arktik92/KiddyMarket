@@ -41,7 +41,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
       {children}
       {toast ? (
         <Animated.View
-          entering={FadeInUp.springify().damping(16)}
+          entering={FadeInUp.duration(220)}
           exiting={FadeOutUp}
           style={[styles.wrap, { top: insets.top + 10 }]}
           pointerEvents="none"
