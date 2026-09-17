@@ -22,7 +22,7 @@ import {
 } from "@/src/api";
 import { formatEuros, parseAmountToCents } from "@/src/format";
 import { AVATAR_ICONS, PALETTE } from "@/src/options";
-import { fakeUid, isNfcSupported, readNfcUid } from "@/src/nfc";
+import { isNfcSupported, readNfcUid } from "@/src/nfc";
 import { fonts, makeStyles, useTheme } from "@/src/theme";
 
 export default function Children() {
@@ -253,15 +253,14 @@ export default function Children() {
             {nfcChild?.nfc_uid ? `Carte actuelle : ${nfcChild.nfc_uid}` : "Aucune carte associée"}
           </Text>
         </View>
-        <Text style={styles.help}>Demande à l'enfant d'approcher sa carte, ou simule une carte pour tester.</Text>
+        <Text style={styles.help}>Demande à l'enfant d'approcher sa carte de l'appareil pour l'associer.</Text>
         <Button
-          label={scanning ? "Approche la carte..." : nfcSupported ? "Scanner la carte (NFC)" : "NFC (build requis)"}
+          label={scanning ? "Approche la carte..." : nfcSupported ? "Scanner la carte (NFC)" : "NFC indisponible sur cet appareil"}
           icon="scan-circle"
           disabled={!nfcSupported || scanning}
           onPress={scanRealNfc}
           testID="scan-associate-button"
         />
-        <Button label="Simuler une carte" icon="sparkles" variant="secondary" onPress={() => doAssociate(fakeUid())} testID="simulate-associate-button" />
       </Sheet>
 
       {/* Delete */}

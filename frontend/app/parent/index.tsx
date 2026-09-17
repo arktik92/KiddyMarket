@@ -8,7 +8,7 @@ import Animated, { FadeInDown } from "react-native-reanimated";
 
 import { Button } from "@/src/components/button";
 import { PaymentSheet } from "@/src/components/payment-sheet";
-import { useChildren, useProducts, type Product, type PurchaseItem } from "@/src/api";
+import { useProducts, type Product, type PurchaseItem } from "@/src/api";
 import { formatEuros } from "@/src/format";
 import { CATEGORY_FILTERS, type IoniconName } from "@/src/options";
 import { fonts, makeStyles, useTheme } from "@/src/theme";
@@ -24,7 +24,6 @@ export default function Caisse() {
   const [payOpen, setPayOpen] = useState(false);
 
   const { data: products, isLoading } = useProducts(category);
-  const { data: children } = useChildren();
 
   const lines = Object.values(cart);
   const totalCents = useMemo(() => lines.reduce((s, l) => s + l.product.price_cents * l.qty, 0), [lines]);
@@ -149,7 +148,6 @@ export default function Caisse() {
         }}
         items={items}
         totalCents={totalCents}
-        kids={children ?? []}
       />
     </View>
   );

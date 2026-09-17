@@ -1,6 +1,6 @@
 // NFC helper. Real NFC works only on a native build (react-native-nfc-manager).
 // In Expo Go / web the native module is absent, so we expose a graceful
-// isSupported() check and the UI falls back to a "simulate scan" button.
+// isSupported() check and the scan button is disabled accordingly.
 
 let NfcManager: any = null;
 let NfcTech: any = null;
@@ -45,12 +45,4 @@ export async function readNfcUid(): Promise<string> {
       await NfcManager.cancelTechnologyRequest();
     } catch {}
   }
-}
-
-// Generates a fake but stable-looking UID for the simulation mode.
-export function fakeUid(): string {
-  const hex = "0123456789ABCDEF";
-  let uid = "";
-  for (let i = 0; i < 8; i++) uid += hex[Math.floor(Math.random() * 16)];
-  return uid;
 }

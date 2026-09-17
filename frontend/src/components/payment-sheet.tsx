@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { ActivityIndicator, Pressable, ScrollView, Text, View } from "react-native";
+import { ActivityIndicator, Text, View } from "react-native";
 import { Ionicons } from "@react-native-vector-icons/ionicons";
 import * as Haptics from "expo-haptics";
 import Animated, { FadeIn, ZoomIn } from "react-native-reanimated";
@@ -10,7 +10,7 @@ import { Sheet } from "@/src/components/sheet";
 import { useToast } from "@/src/components/toast";
 import { childByNfc, usePurchase, type Child, type PurchaseItem } from "@/src/api";
 import { formatEuros } from "@/src/format";
-import { fakeUid, isNfcSupported, readNfcUid } from "@/src/nfc";
+import { isNfcSupported, readNfcUid } from "@/src/nfc";
 import type { IoniconName } from "@/src/options";
 import { fonts, makeStyles, useTheme } from "@/src/theme";
 
@@ -22,14 +22,12 @@ export function PaymentSheet({
   onPaid,
   items,
   totalCents,
-  kids,
 }: {
   visible: boolean;
   onClose: () => void;
   onPaid: () => void;
   items: PurchaseItem[];
   totalCents: number;
-  kids: Child[];
 }) {
   const styles = useStyles();
   const { colors } = useTheme();
@@ -100,33 +98,22 @@ export function PaymentSheet({
       testID="payment-sheet"
     >
       {step === "identify" ? (
-        <View style={{ gap: 16 }}>
-          <Text style={styles.help}>Approche ta Carte Bleue, ou choisis ton profil pour simuler.</Text>
-
+        <View style={{ gap: 16, alignItems: "center", paddingVertical: 8 }}>
+          <View style={styles.scanBadge}>
+            <Ionicons name="card" size={48} color={colors.info} />
+          </View>
+          <Text style={styles.help}>Approche ta Carte Bleue de l'appareil pour payer.</Text>
           <Button
-            label={scanning ? "Approche ta carte..." : nfcSupported ? "Scanner la carte (NFC)" : "NFC (build requis)"}
+            label={scanning ? "Approche ta carte..." : nfcSupported ? "Scanner la carte (NFC)" : "NFC indisponible sur cet appareil"}
             icon="scan-circle"
-            variant="secondary"
             disabled={!nfcSupported || scanning}
             onPress={scanReal}
             testID="scan-nfc-button"
+            style={{ alignSelf: "stretch" }}
           />
-
-          <View style={styles.dividerRow}>
-            <View style={styles.line} />
-            <Text style={styles.dividerText}>ou simuler</Text>
-            <View style={styles.line} />
-          </View>
-
-          <View style={styles.childGrid}>
-            {kids.map((c) => (
-              <Pressable key={c.id} style={styles.childPick} onPress={() => pickChild(c)} testID={`pay-child-${c.id}`}>
-                <Avatar icon={c.avatar_icon} color={c.color} size={64} />
-                <Text style={styles.childPickName}>{c.name}</Text>
-                <Text style={styles.childPickBal}>{formatEuros(c.balance_cents)}</Text>
-              </Pressable>
-            ))}
-          </View>
+          {!nfcSupported ? (
+            <Text style={styles.help}>Le paiement par carte fonctionne sur un appareil avec NFC.</Text>
+          ) : null}
         </View>
       ) : null}
 
@@ -200,20 +187,14 @@ function Row({ label, value, bold, color }: { label: string; value: string; bold
 
 const useStyles = makeStyles((colors) => ({
   help: { fontFamily: fonts.text, fontSize: 15, color: colors.muted, textAlign: "center" },
-  dividerRow: { flexDirection: "row", alignItems: "center", gap: 12 },
-  line: { flex: 1, height: 1, backgroundColor: colors.border },
-  dividerText: { fontFamily: fonts.text, fontSize: 13, color: colors.muted },
-  childGrid: { flexDirection: "row", flexWrap: "wrap", gap: 12, justifyContent: "center" },
-  childPick: {
-    width: "30%",
+  scanBadge: {
+    width: 96,
+    height: 96,
+    borderRadius: 999,
+    backgroundColor: colors.surfaceTertiary,
     alignItems: "center",
-    gap: 6,
-    backgroundColor: colors.surfaceSecondary,
-    borderRadius: 18,
-    paddingVertical: 14,
+    justifyContent: "center",
   },
-  childPickName: { fontFamily: fonts.display, fontSize: 16, fontWeight: "500", color: colors.onSurface },
-  childPickBal: { fontFamily: fonts.text, fontSize: 13, fontWeight: "700", color: colors.muted },
   childHeader: { alignItems: "center", gap: 10 },
   childHeaderName: { fontFamily: fonts.display, fontSize: 24, fontWeight: "500", color: colors.onSurface },
   summary: { backgroundColor: colors.surfaceSecondary, borderRadius: 20, padding: 18, gap: 12 },

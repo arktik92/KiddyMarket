@@ -1,0 +1,31 @@
+{
+  "summary": "Frontend regression test for NFC-simulation removal (mobile 390x844). All targeted checks PASS. Payment sheet identify step shows ONLY the 'Scanner la carte (NFC)' button (testID scan-nfc-button) which on web renders disabled with label 'NFC indisponible sur cet appareil' and helper 'Le paiement par carte fonctionne sur un appareil avec NFC.' — NO pay-child-* buttons, NO 'ou simuler' divider, NO 'simuler' text anywhere. Children NFC association sheet shows ONLY scan-associate-button (disabled, 'NFC indisponible sur cet appareil') — NO simulate-associate-button, NO 'Simuler une carte' text. Grep of /app/frontend (excluding node_modules) confirms zero remaining references to pay-child-, simulate-associate, fakeUid, or 'Simuler une carte'. Navigation flow verified end-to-end: parent-access-button -> PIN 1234 -> caisse-screen loads with 8 products -> product-tile tap -> pay-button -> payment-sheet opens correctly. Bottom tabs Caisse/Boutique/Enfants/Historique reachable, no red screens, no runtime errors (only the previously-known non-blocking react-native-web 'shadow*' deprecation warning). CRUD/money flows (add-product-fab, add-child-fab, credit-<id>/debit-<id>+save-money-button, Historique filter chips) were fully validated in iteration_1 and code paths are unchanged this iteration, so they were spot-checked but not re-driven end-to-end.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "global", "issues": ["Pre-existing non-blocking react-native-web warning: '\"shadow*\" style props are deprecated. Use \"boxShadow\".' Already reported in iteration_1."]}
+    ],
+    "react_native_issues": [
+      {"component": "src/nfc.ts header comment", "issue": "Comment on line 3 is now stale: it still says 'the UI falls back to a \"simulate scan\" button' but simulation was removed this iteration. Reference: /app/frontend/src/nfc.ts:3. Update comment to reflect that unsupported devices simply show a disabled scan button."}
+    ]
+  },
+  "test_report_links": ["/app/backend/tests/test_kiddymarket.py", "/app/test_reports/pytest/pytest_results.xml"],
+  "action_items": [
+    "(Optional cleanup) Update stale comment in /app/frontend/src/nfc.ts line 3 — remove 'simulate scan button' wording now that simulation UI is gone."
+  ],
+  "critical_code_review_comments": [
+    "payment-sheet.tsx identify step is minimal & correct: single Button (scan-nfc-button) wired to scanReal(), disabled when !nfcSupported. No child grid, no divider, no fakeUid helper.",
+    "children.tsx NFC sheet contains only scan-associate-button (scanRealNfc). Old simulate-associate-button and its handler are gone.",
+    "isNfcSupported() correctly returns false when react-native-nfc-manager native module is absent (web/Expo Go), so the disabled state is deterministic in preview.",
+    "Because real NFC cannot run in the web preview, the payment sheet cannot progress past the identify step in preview — this is expected per the spec and NOT a bug."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "not re-tested (unchanged per request)", "frontend": "100% of targeted regression checks"},
+  "seed_data_creation": "Reused iteration_1 seed (family PIN 1234, Lucas/Emma + previously created TEST_UI_* items). No new seed data added this iteration.",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "NFC simulation UI has been fully removed. In the web preview both scan buttons stay disabled with label 'NFC indisponible sur cet appareil' — do NOT report this as a bug. To reach the payment sheet: parent-access-button -> PIN 1234 (pin-key-1..4) -> wait for caisse-screen -> wait for [data-testid^=product-tile-] (needs ~2s for FadeInDown + fetch) -> tap tile -> pay-button. To reach NFC associate: Enfants tab -> nfc-<id>. Reusable pytest at /app/backend/tests/test_kiddymarket.py.",
+  "rca_of_issue": "No bugs. Removal was applied cleanly; the only leftover artifact is a stale comment in src/nfc.ts (non-functional)."
+}
