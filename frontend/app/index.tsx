@@ -20,11 +20,16 @@ export default function ProfileSelection() {
   return (
     <View style={[styles.container, { paddingTop: insets.top + 24 }]} testID="profile-selection">
       <View style={styles.header}>
-        <View style={styles.logoRow}>
-          <View style={styles.logoBadge}>
-            <Ionicons name="card" size={26} color={colors.onBrandPrimary} />
+        <View style={styles.headerRow}>
+          <View style={styles.logoRow}>
+            <View style={styles.logoBadge}>
+              <Ionicons name="card" size={26} color={colors.onBrandPrimary} />
+            </View>
+            <Text style={styles.brand}>KiddyMarket</Text>
           </View>
-          <Text style={styles.brand}>KiddyMarket</Text>
+          <Pressable style={styles.gear} onPress={() => router.push("/settings")} testID="settings-button">
+            <Ionicons name="settings-sharp" size={22} color={colors.onSurfaceTertiary} />
+          </Pressable>
         </View>
         <Text style={styles.subtitle}>Qui es-tu ?</Text>
       </View>
@@ -86,6 +91,15 @@ export default function ProfileSelection() {
 const useStyles = makeStyles((colors) => ({
   container: { flex: 1, backgroundColor: colors.surface, paddingHorizontal: 20 },
   header: { marginBottom: 24 },
+  headerRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
+  gear: {
+    width: 44,
+    height: 44,
+    borderRadius: 999,
+    backgroundColor: colors.surfaceTertiary,
+    alignItems: "center",
+    justifyContent: "center",
+  },
   logoRow: { flexDirection: "row", alignItems: "center", gap: 12 },
   logoBadge: {
     width: 46,

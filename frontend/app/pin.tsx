@@ -6,7 +6,7 @@ import * as Haptics from "expo-haptics";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Animated, { useAnimatedStyle, useSharedValue, withSequence, withTiming } from "react-native-reanimated";
 
-import { verifyPin } from "@/src/api";
+import { resetPin, verifyPin } from "@/src/api";
 import { useToast } from "@/src/components/toast";
 import { fonts, makeStyles, useTheme } from "@/src/theme";
 
@@ -19,6 +19,7 @@ export default function PinScreen() {
   const toast = useToast();
   const [pin, setPin] = useState("");
   const [checking, setChecking] = useState(false);
+  const [resetMode, setResetMode] = useState(false);
   const shake = useSharedValue(0);
 
   const shakeStyle = useAnimatedStyle(() => ({ transform: [{ translateX: shake.value }] }));
@@ -35,6 +36,13 @@ export default function PinScreen() {
   const submit = async (code: string) => {
     setChecking(true);
     try {
+      if (resetMode) {
+        await resetPin(code);
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
+        toast.show("Nouveau code enregistré", "success");
+        router.replace("/parent");
+        return;
+      }
       const res = await verifyPin(code);
       if (res.ok) {
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
@@ -76,8 +84,10 @@ export default function PinScreen() {
         <View style={styles.lockBadge}>
           <Ionicons name="lock-closed" size={30} color={colors.onBrandSecondary} />
         </View>
-        <Text style={styles.title}>Accès Parent</Text>
-        <Text style={styles.subtitle}>Entre ton code à 4 chiffres</Text>
+        <Text style={styles.title}>{resetMode ? "Nouveau code" : "Accès Parent"}</Text>
+        <Text style={styles.subtitle}>
+          {resetMode ? "Choisis un nouveau code à 4 chiffres" : "Entre ton code à 4 chiffres"}
+        </Text>
 
         <Animated.View style={[styles.dots, shakeStyle]}>
           {[0, 1, 2, 3].map((i) => (
@@ -87,7 +97,16 @@ export default function PinScreen() {
             />
           ))}
         </Animated.View>
-        <Text style={styles.hint}>Code par défaut : 1234</Text>
+        <Pressable
+          onPress={() => {
+            setResetMode((m) => !m);
+            setPin("");
+          }}
+          hitSlop={8}
+          testID="forgot-pin-button"
+        >
+          <Text style={styles.hint}>{resetMode ? "Annuler" : "Code oublié ?"}</Text>
+        </Pressable>
       </View>
 
       <View style={styles.keypad}>

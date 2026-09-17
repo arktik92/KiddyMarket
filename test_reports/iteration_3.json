@@ -1,0 +1,32 @@
+{
+  "summary": "KiddyMarket V2 auth + multi-tenant isolation fully validated. Backend: 27/27 pytest tests PASS covering signup (7 seeded products, 0 children, duplicate 409, weak password 400), login (200 / 401 / 401), auth/me (401 without/with bad token, 200 with valid), auth gate on ALL data + PIN endpoints (11 endpoints return 401 unauthenticated), multi-tenant isolation (parent B does NOT see parent A's child/product; cross-tenant PUT/DELETE return 404), PIN (default 1234 ok, wrong current 403, change 200, reset 200, invalid format 400), and regression CRUD + credit/debit/purchase + insufficient 402. Frontend (390x844 mobile viewport): auth-gate redirect to /login works, toggle-mode-button switches signup, signup with name+email+password lands on profile-selection, google-login-button visible (not exercised per spec), settings-button opens settings-screen, current-pin-input(1234)+new-pin-input(5678)+save-pin-button succeeds with 'Code PIN modifié' toast, parent-access-button + pin-key-5-6-7-8 unlocks caisse-screen showing exactly 7 seeded products, product tile tap -> pay-button -> payment-sheet opens with disabled scan-nfc-button labeled 'NFC indisponible sur cet appareil' (expected in web preview), forgot-pin-button reset mode accepts new 4-digit code and unlocks parent, add-child-fab -> save-child-button creates child, credit-<id> -> save-money-button credits 10€ (visible in Historique + on profile), history-screen loads with filter chips, logout-account-button returns to login-screen, and re-login with the same email/password succeeds. Only pre-existing non-blocking react-native-web warning ('shadow*' deprecated) observed; no red screens, no runtime errors, no auth 401s after login.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "global", "issues": ["Pre-existing non-blocking react-native-web console warning: '\"shadow*\" style props are deprecated. Use \"boxShadow\".' Already reported in iterations 1/2 — not a V2 regression."]}
+    ],
+    "react_native_issues": []
+  },
+  "test_report_links": ["/app/backend/tests/test_kiddymarket_v2.py", "/app/test_reports/pytest/pytest_results.xml"],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "server.py: session verification correctly enforces expires_at with timezone normalization; every data endpoint takes user via Depends(current_user) and scopes queries by user_id — good multi-tenant isolation.",
+    "seed_products_for is idempotent (guarded by count_documents==0) — safe if invoked from both signup and google flows.",
+    "auth_provider is upgraded from 'email' to 'both' when an existing email account first signs in via Google — sensible link strategy.",
+    "PIN endpoints correctly validate 4-digit format for change and reset; wrong current PIN returns 403; per-account PIN stored on the user document.",
+    "Frontend RootNavigator redirects unauthenticated users to /login and away from /login once logged in — auth gate spec met.",
+    "Password bcrypt with 72-byte guard is correct; login uses constant-time bcrypt check (no timing leak concern beyond bcrypt itself)."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_kiddymarket_v2.py (new V2 pytest suite)",
+    "/app/backend/tests/test_kiddymarket.py (removed — V1 endpoints obsolete)"
+  ],
+  "success_rate": {"backend": "100% (27/27)", "frontend": "100% of targeted V2 flows"},
+  "seed_data_creation": "Each backend test signs up a fresh test+<uuid>@test.com account (multi-tenant safe). Frontend UI test also created a fresh test+<ts>@test.com account and added child 'Lucas' with 10€ balance. No shared/global seed modified.",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "V2 is auth-gated. Use EXPO_PUBLIC_BACKEND_URL (not EXPO_BACKEND_URL) from frontend/.env. For every backend request send 'Authorization: Bearer <session_token>' obtained from /api/auth/signup or /api/auth/login. Emails must be unique per run (use test+<uuid>@test.com). Google flow only checks button presence — never call demobackend.emergentagent.com. Frontend TextInputs from src/components/input wrap a native <input>; fill via '[data-testid=\"<id>\"] input'. To reach the parent tabs: signup -> profile-selection -> parent-access-button -> pin-screen -> pin-key-<n> ×4 -> caisse-screen (2–3 s). scan-nfc-button will remain disabled in web preview — expected. Pytest command: EXPO_PUBLIC_BACKEND_URL=<url> pytest backend/tests/test_kiddymarket_v2.py -v.",
+  "rca_of_issue": "No bugs. All V2 auth, isolation, PIN, and regression flows behave as specified."
+}

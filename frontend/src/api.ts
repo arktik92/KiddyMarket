@@ -1,7 +1,12 @@
 // Central API client + react-query hooks for KiddyMarket.
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
+import { getToken, triggerUnauthorized } from "@/src/auth/session";
+
 const BASE = `${process.env.EXPO_PUBLIC_BACKEND_URL}/api`;
+
+export type AuthUser = { id: string; email: string; name: string | null };
+export type AuthResult = { session_token: string; user: AuthUser };
 
 export type Child = {
   id: string;
@@ -44,10 +49,18 @@ export type Transaction = {
 };
 
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
+  const token = getToken();
   const res = await fetch(`${BASE}${path}`, {
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
     ...options,
   });
+  if (res.status === 401) {
+    triggerUnauthorized();
+    throw new Error("Session expirée");
+  }
   if (!res.ok) {
     let detail = "Une erreur est survenue";
     try {
@@ -59,6 +72,50 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
     throw err;
   }
   return res.json() as Promise<T>;
+}
+
+// ------- Auth -------
+export function signup(email: string, password: string, name: string) {
+  return request<AuthResult>("/auth/signup", {
+    method: "POST",
+    body: JSON.stringify({ email, password, name }),
+  });
+}
+
+export function login(email: string, password: string) {
+  return request<AuthResult>("/auth/login", {
+    method: "POST",
+    body: JSON.stringify({ email, password }),
+  });
+}
+
+export function googleSession(session_id: string) {
+  return request<AuthResult>("/auth/session", {
+    method: "POST",
+    body: JSON.stringify({ session_id }),
+  });
+}
+
+export function fetchMe() {
+  return request<AuthUser>("/auth/me");
+}
+
+export function logoutRequest() {
+  return request<{ ok: boolean }>("/auth/logout", { method: "POST" });
+}
+
+export function resetPin(new_pin: string) {
+  return request<{ ok: boolean }>("/parent/reset-pin", {
+    method: "POST",
+    body: JSON.stringify({ new_pin }),
+  });
+}
+
+export function changePinRequest(current_pin: string, new_pin: string) {
+  return request<{ ok: boolean }>("/parent/pin", {
+    method: "PUT",
+    body: JSON.stringify({ current_pin, new_pin }),
+  });
 }
 
 // ------- Children -------
@@ -204,12 +261,5 @@ export function verifyPin(pin: string) {
   return request<{ ok: boolean }>("/parent/verify-pin", {
     method: "POST",
     body: JSON.stringify({ pin }),
-  });
-}
-
-export function changePin(current_pin: string, new_pin: string) {
-  return request<{ ok: boolean }>("/parent/pin", {
-    method: "PUT",
-    body: JSON.stringify({ current_pin, new_pin }),
   });
 }
